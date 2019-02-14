@@ -52,7 +52,7 @@ class Home extends Component {
 
     socket.on("userVotedRejected", data => {
       console.log(data);
-      alert(data);
+      this.setState({ voteResult: data });
     });
   }
 
@@ -103,7 +103,11 @@ class Home extends Component {
       return { name: item.name, value: item.votes };
     });
     return (
-      <PieChart width={window.outerWidth} height={window.outerHeight}>
+      <PieChart
+        width={window.outerWidth}
+        height={window.outerHeight}
+        className="animated fadeIn"
+      >
         <Pie
           data={chartData}
           dataKey="value"
@@ -114,8 +118,8 @@ class Home extends Component {
           outerRadius={80}
           fill="#8884d8"
         >
-          {chartData.map((entry, index) => (
-            <Cell fill={COLORS[index % COLORS.length]} />
+          {chartData.map((entry, i) => (
+            <Cell key={i} fill={COLORS[i % COLORS.length]} />
           ))}
         </Pie>
         <Tooltip />
@@ -132,7 +136,7 @@ class Home extends Component {
 
     return (
       <div>
-        {this.state.restaurants.length === 0 ? (
+        {this.state.restaurants.length === 0 && !this.state.voteResult && (
           <Row type="flex" justify="center">
             <Col span={4}>
               <Input
@@ -149,8 +153,6 @@ class Home extends Component {
               />
             </Col>
           </Row>
-        ) : (
-          this.renderRestaurants()
         )}
         <br />
         {!this.state.voteResult && this.renderRestaurants()}
