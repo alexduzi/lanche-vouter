@@ -7,7 +7,6 @@ export default ({ rest, onVoteClickHandler }) => {
     <Col>
       <Card
         hoverable={true}
-        onClick={() => onVoteClickHandler(rest)}
         className="animated fadeIn"
         span={4}
         style={{ width: 300, margin: 10 }}
