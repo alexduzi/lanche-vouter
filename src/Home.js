@@ -2,10 +2,25 @@ import React, { Component } from "react";
 import openSocket from "socket.io-client";
 import { Row, Col, Icon, Input } from "antd";
 import RestaurantCard from "./RestaurantCard";
-import { PieChart, Pie } from "recharts";
+import { PieChart, Pie, Legend, Tooltip, Cell } from "recharts";
 import _ from "lodash";
 import "antd/dist/antd.css";
 import "./animated.css";
+
+const COLORS = [
+  "#0000FF",
+  "#000080",
+  "#FF00FF",
+  "#800080",
+  "#FF5733",
+  "#36FF33",
+  "#FF9C33",
+  "#F3FF33",
+  "#33B5FF",
+  "#33FFCA",
+  "#9633FF",
+  "#FF339F"
+];
 
 const socket = openSocket("https://melhorhoradodia.herokuapp.com", {
   secure: true
@@ -80,28 +95,31 @@ class Home extends Component {
   };
 
   renderVotes = () => {
+    const {
+      voteResult: { message, partials }
+    } = this.state;
+
+    const chartData = partials.map(item => {
+      return { name: item.name, value: item.votes };
+    });
     return (
-      <PieChart width={730} height={250}>
+      <PieChart width={window.outerWidth} height={window.outerHeight}>
         <Pie
-          data={[]}
+          data={chartData}
           dataKey="value"
           nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={50}
-          fill="#8884d8"
-        />
-        <Pie
-          data={[]}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
+          cx={"50%"}
+          cy={"20%"}
           innerRadius={60}
           outerRadius={80}
-          fill="#82ca9d"
-          label
-        />
+          fill="#8884d8"
+        >
+          {chartData.map((entry, index) => (
+            <Cell fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend verticalAlign="top" height={150} />
       </PieChart>
     );
   };
@@ -135,6 +153,8 @@ class Home extends Component {
           this.renderRestaurants()
         )}
         <br />
+        {!this.state.voteResult && this.renderRestaurants()}
+        {this.state.voteResult && this.renderVotes()}
       </div>
     );
   }
