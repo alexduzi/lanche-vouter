@@ -114,22 +114,27 @@ class Home extends Component {
 
     return (
       <div>
-        <Row type="flex" justify="center">
-          <Col span={4}>
-            <Input
-              placeholder="'Entri com seu nomi'"
-              prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
-              suffix={suffix}
-              value={userName}
-              size="large"
-              onKeyPress={this.handleKeyPress}
-              onChange={this.onChangeUserName}
-              ref={node => (this.userNameInput = node)}
-            />
-          </Col>
-        </Row>
+        {this.state.restaurants.length === 0 ? (
+          <Row type="flex" justify="center">
+            <Col span={4}>
+              <Input
+                placeholder="'Entri com seu nomi'"
+                prefix={
+                  <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
+                }
+                suffix={suffix}
+                value={userName}
+                size="large"
+                onKeyPress={this.handleKeyPress}
+                onChange={this.onChangeUserName}
+                ref={node => (this.userNameInput = node)}
+              />
+            </Col>
+          </Row>
+        ) : (
+          this.renderRestaurants()
+        )}
         <br />
-        {this.renderRestaurants()}
       </div>
     );
   }
