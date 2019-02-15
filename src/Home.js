@@ -6,8 +6,8 @@ import RestaurantPieChart from "./RestaurantPieChart";
 import _ from "lodash";
 import "antd/dist/antd.css";
 import "./animated.css";
-
-const socket = openSocket("https://melhorhoradodia.herokuapp.com", {
+//https://melhorhoradodia.herokuapp.com
+const socket = openSocket("http://localhost:3000", {
   secure: true
 });
 
@@ -61,45 +61,43 @@ class Home extends Component {
     socket.emit("vote", rest);
   };
 
-  render() {
-    const {
-      userName,
-      voteResult: { message, partials }
-    } = this.state;
+  renderInput = () => {
+    const { userName } = this.state;
     const suffix = userName ? (
       <Icon type="close-circle" onClick={this.emitEmpty} />
     ) : null;
 
     return (
-      <div>
-        {this.state.restaurants.length === 0 && !this.state.voteResult && (
-          <Row type="flex" justify="center">
-            <Col span={4}>
-              <Input
-                placeholder="'Entri com seu nomi'"
-                prefix={
-                  <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                }
-                suffix={suffix}
-                value={userName}
-                size="large"
-                onKeyPress={this.handleKeyPress}
-                onChange={this.onChangeUserName}
-                ref={node => (this.userNameInput = node)}
-              />
-            </Col>
-          </Row>
-        )}
-        <br />
-        {!this.state.voteResult && (
-          <RestaurantList
-            restaurants={this.state.restaurants}
-            onVoteClickHandler={this.onVoteClickHandler}
+      <Row type="flex" justify="center">
+        <Col span={4}>
+          <Input
+            placeholder="'Entri com seu nomi'"
+            prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
+            suffix={suffix}
+            value={userName}
+            size="large"
+            onKeyPress={this.handleKeyPress}
+            onChange={this.onChangeUserName}
+            ref={node => (this.userNameInput = node)}
           />
-        )}
-        {this.state.voteResult && <RestaurantPieChart partials={partials} />}
-      </div>
+        </Col>
+      </Row>
     );
+  };
+
+  render() {
+    if (this.state.restaurants.length === 0 && !this.state.voteResult)
+      return this.renderInput();
+
+    if (!this.state.voteResult)
+      return (
+        <RestaurantList
+          restaurants={this.state.restaurants}
+          onVoteClickHandler={this.onVoteClickHandler}
+        />
+      );
+
+    return <RestaurantPieChart partials={this.state.voteResult.partials} />;
   }
 }
 
