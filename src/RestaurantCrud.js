@@ -1,8 +1,35 @@
 import React, { Component } from "react";
-import { Input, Button, Card, Row, Col } from "antd";
+import { Form, Input, Button, Card, Row, Col } from "antd";
 import axios from "axios";
+import openSocket from "socket.io-client";
 
-const { Meta } = Card;
+const socket = openSocket(process.env.REACT_APP_PUBLIC_URL, {
+  secure: true
+});
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 8 },
+    sm: { span: 8 }
+  },
+  wrapperCol: {
+    xs: { span: 8 },
+    sm: { span: 8 }
+  }
+};
+
+const tailFormItemLayout = {
+  wrapperCol: {
+    xs: {
+      span: 6,
+      offset: 8
+    },
+    sm: {
+      span: 6,
+      offset: 8
+    }
+  }
+};
 
 class RestaurantCrud extends Component {
   state = {
@@ -10,6 +37,15 @@ class RestaurantCrud extends Component {
     restaurantImageUrl: undefined,
     loading: false
   };
+
+  componentWillMount() {
+    socket.on("restaurant", data => {
+      console.log(data);
+      this.setState({
+        loading: false
+      });
+    });
+  }
 
   renderRestaurantImage = () => {
     if (this.state.restaurantImageUrl)
@@ -26,9 +62,7 @@ class RestaurantCrud extends Component {
               src={this.state.restaurantImageUrl}
             />
           }
-        >
-          <Meta title={this.state.restaurantName} description={""} />
-        </Card>
+        />
       );
 
     return undefined;
@@ -39,58 +73,61 @@ class RestaurantCrud extends Component {
   };
 
   onClickSaveRestaurantHandler = () => {
+    const { restaurantName, restaurantImageUrl } = this.state;
+
+    if (!restaurantName || restaurantName === "") {
+      alert("preencha o nome do restaurante!");
+    }
+
+    if (!restaurantImageUrl || restaurantImageUrl === "") {
+      alert("coloque uma imagem para o restaurante!");
+    }
+
     this.setState({
       loading: true
     });
+    console.log("onClickSaveRestaurantHandler");
+    socket.emit("addRestaurant", { restaurantName, restaurantImageUrl });
+  };
 
-    axios
-      .post("", {})
-      .then(res => {
-        this.setState({
-          loading: false
-        });
-      })
-      .catch(err => {
-        this.setState({
-          loading: false
-        });
-      });
+  onchangeRestaurantNameHandler = e => {
+    this.setState({ restaurantName: e.target.value });
   };
 
   render() {
     const { loading } = this.state;
     return (
-      <Row type="flex" justify="center" align="middle">
-        <Row order={1}>
-          <Col>
-            <Input placeholder="Nome do restaurante" size="large" />
-          </Col>
-        </Row>
-        <Row order={2}>
-          <Col>
-            <Input
-              placeholder="Imagem do restaurante"
-              size="large"
-              onChange={this.onChangeRestaurantImageHandler}
-            />
-          </Col>
-        </Row>
+      <Form type="flex" justify="center" align="middle">
+        <Form.Item {...formItemLayout} label="Nome do restaurante">
+          <Input
+            placeholder="Nome do restaurante"
+            size="large"
+            onChange={this.onchangeRestaurantNameHandler}
+            value={this.state.restaurantName}
+          />
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="Imagem do restaurante">
+          <Input
+            placeholder="Imagem do restaurante"
+            size="large"
+            onChange={this.onChangeRestaurantImageHandler}
+            value={this.state.restaurantImageUrl}
+          />
+        </Form.Item>
         <Row order={3}>
           <Col>{this.renderRestaurantImage()}</Col>
         </Row>
-        <Row order={4}>
-          <Col>
-            <Button
-              type="primary"
-              size="large"
-              onClick={this.onClickSaveRestaurantHandler}
-              loading={loading}
-            >
-              Cadastrar
-            </Button>
-          </Col>
-        </Row>
-      </Row>
+        <Form.Item {...tailFormItemLayout}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={this.onClickSaveRestaurantHandler}
+            loading={loading}
+          >
+            Cadastrar
+          </Button>
+        </Form.Item>
+      </Form>
     );
   }
 }
