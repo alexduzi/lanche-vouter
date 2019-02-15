@@ -21,6 +21,8 @@ class Home extends Component {
   };
 
   componentWillMount() {
+    socket.emit("name", "");
+
     socket.on("userJoined", data => {
       console.log("userJoined", data);
     });
