@@ -4,10 +4,10 @@ import { Row, Col, Icon, Input } from "antd";
 import RestaurantList from "./RestaurantList";
 import RestaurantPieChart from "./RestaurantPieChart";
 import _ from "lodash";
-import "antd/dist/antd.css";
+
 import "./animated.css";
-//https://melhorhoradodia.herokuapp.com
-const socket = openSocket("http://localhost:3000", {
+
+const socket = openSocket(process.env.REACT_APP_PUBLIC_URL, {
   secure: true
 });
 
