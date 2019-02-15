@@ -15,7 +15,8 @@ class Home extends Component {
   state = {
     userName: "",
     restaurants: [],
-    voteResult: undefined
+    voteResult: undefined,
+    loadingRestaurants: true
   };
 
   componentWillMount() {
@@ -26,7 +27,8 @@ class Home extends Component {
     socket.on("restaurant", data => {
       console.log(data);
       this.setState({
-        restaurants: _.chunk(data, 3)
+        restaurants: _.chunk(data, 3),
+        loadingRestaurants: false
       });
     });
 
@@ -41,53 +43,12 @@ class Home extends Component {
     });
   }
 
-  emitEmpty = () => {
-    this.userNameInput.focus();
-    this.setState({ userName: "" });
-  };
-
-  onChangeUserName = e => {
-    this.setState({ userName: e.target.value });
-  };
-
-  handleKeyPress = e => {
-    if (e.key === "Enter") {
-      socket.emit("name", this.state.userName);
-      this.setState({ userName: "" });
-    }
-  };
-
   onVoteClickHandler = rest => {
     socket.emit("vote", rest);
   };
 
-  renderInput = () => {
-    const { userName } = this.state;
-    const suffix = userName ? (
-      <Icon type="close-circle" onClick={this.emitEmpty} />
-    ) : null;
-
-    return (
-      <Row type="flex" justify="center">
-        <Col span={4}>
-          <Input
-            placeholder="'Entri com seu nomi'"
-            prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
-            suffix={suffix}
-            value={userName}
-            size="large"
-            onKeyPress={this.handleKeyPress}
-            onChange={this.onChangeUserName}
-            ref={node => (this.userNameInput = node)}
-          />
-        </Col>
-      </Row>
-    );
-  };
-
   render() {
-    if (this.state.restaurants.length === 0 && !this.state.voteResult)
-      return this.renderInput();
+    if (this.state.loadingRestaurants) return <Icon type="loading" />;
 
     if (!this.state.voteResult)
       return (
