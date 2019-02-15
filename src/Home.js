@@ -6,6 +6,7 @@ import RestaurantPieChart from "./RestaurantPieChart";
 import _ from "lodash";
 
 import "./animated.css";
+import { hidden } from "ansi-colors";
 
 const socket = openSocket(process.env.REACT_APP_PUBLIC_URL, {
   secure: true
@@ -48,8 +49,6 @@ class Home extends Component {
   };
 
   render() {
-    if (this.state.loadingRestaurants) return <Icon type="loading" />;
-
     if (!this.state.voteResult)
       return (
         <RestaurantList
