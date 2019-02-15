@@ -4,6 +4,7 @@ import Vote from "./Vote";
 import RestaurantCrud from "./RestaurantCrud";
 import { HashRouter, Route, Switch } from "react-router-dom";
 import "antd/dist/antd.css";
+import './index.css';
 class App extends Component {
   render() {
     return (

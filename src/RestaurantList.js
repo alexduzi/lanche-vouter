@@ -10,6 +10,7 @@ export default ({ restaurants, onVoteClickHandler }) => {
           return (
             <RestaurantCard
               key={rest.id}
+              hoverable={true}
               rest={rest}
               onVoteClickHandler={onVoteClickHandler}
             />
