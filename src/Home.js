@@ -1,26 +1,11 @@
 import React, { Component } from "react";
 import openSocket from "socket.io-client";
 import { Row, Col, Icon, Input } from "antd";
-import RestaurantCard from "./RestaurantCard";
-import { PieChart, Pie, Legend, Tooltip, Cell } from "recharts";
+import RestaurantList from "./RestaurantList";
+import RestaurantPieChart from "./RestaurantPieChart";
 import _ from "lodash";
 import "antd/dist/antd.css";
 import "./animated.css";
-
-const COLORS = [
-  "#0000FF",
-  "#000080",
-  "#FF00FF",
-  "#800080",
-  "#FF5733",
-  "#36FF33",
-  "#FF9C33",
-  "#F3FF33",
-  "#33B5FF",
-  "#33FFCA",
-  "#9633FF",
-  "#FF339F"
-];
 
 const socket = openSocket("https://melhorhoradodia.herokuapp.com", {
   secure: true
@@ -76,60 +61,11 @@ class Home extends Component {
     socket.emit("vote", rest);
   };
 
-  renderRestaurants = () => {
-    return this.state.restaurants.map((restaurants, index) => {
-      return (
-        <Row type="flex" justify="center" key={index}>
-          {restaurants.map((rest, idx) => {
-            return (
-              <RestaurantCard
-                key={rest.id}
-                rest={rest}
-                onVoteClickHandler={this.onVoteClickHandler}
-              />
-            );
-          })}
-        </Row>
-      );
-    });
-  };
-
-  renderVotes = () => {
+  render() {
     const {
+      userName,
       voteResult: { message, partials }
     } = this.state;
-
-    const chartData = partials.map(item => {
-      return { name: item.name, value: item.votes };
-    });
-    return (
-      <PieChart
-        width={window.outerWidth}
-        height={window.outerHeight}
-        className="animated fadeIn"
-      >
-        <Pie
-          data={chartData}
-          dataKey="value"
-          nameKey="name"
-          cx={"50%"}
-          cy={"20%"}
-          innerRadius={60}
-          outerRadius={80}
-          fill="#8884d8"
-        >
-          {chartData.map((entry, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend verticalAlign="top" height={150} />
-      </PieChart>
-    );
-  };
-
-  render() {
-    const { userName } = this.state;
     const suffix = userName ? (
       <Icon type="close-circle" onClick={this.emitEmpty} />
     ) : null;
@@ -155,8 +91,13 @@ class Home extends Component {
           </Row>
         )}
         <br />
-        {!this.state.voteResult && this.renderRestaurants()}
-        {this.state.voteResult && this.renderVotes()}
+        {!this.state.voteResult && (
+          <RestaurantList
+            restaurants={this.state.restaurants}
+            onVoteClickHandler={this.onVoteClickHandler}
+          />
+        )}
+        {this.state.voteResult && <RestaurantPieChart partials={partials} />}
       </div>
     );
   }
