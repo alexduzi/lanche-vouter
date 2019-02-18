@@ -2,7 +2,7 @@ import React from "react";
 import { Col, Card, Icon } from "antd";
 const { Meta } = Card;
 
-export default ({ rest, onVoteClickHandler }) => {
+export default ({ rest, onVoteClickHandler, removeRestaurant }) => {
   return (
     <Col>
       <Card
@@ -18,7 +18,12 @@ export default ({ rest, onVoteClickHandler }) => {
           />
         }
         actions={[
-          <Icon type="check" onClick={() => onVoteClickHandler(rest)} />
+          onVoteClickHandler && (
+            <Icon type="check" onClick={() => onVoteClickHandler(rest)} />
+          ),
+          removeRestaurant && (
+            <Icon type="delete" onClick={() => removeRestaurant(rest)} />
+          )
         ]}
       >
         <Meta title={rest.name} description={rest.description} />
